@@ -3,33 +3,40 @@ import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
 
 import Header from '../components/header'
+import NavBar from '../components/navbar'
 import './index.css'
 
-const Layout = ({ children, data }) => (
-  <div>
-    <Helmet
-      title={data.site.siteMetadata.title}
-      meta={[
-        { name: 'description', content: 'Sample' },
-        { name: 'keywords', content: 'sample, something' },
-      ]}
-    />
-    <Header siteTitle={data.site.siteMetadata.title} />
-    <div
-      style={{
-        margin: '0 auto',
-        maxWidth: 960,
-        padding: '0px 1.0875rem 1.45rem',
-        paddingTop: 0,
-      }}
-    >
-      {children()}
-    </div>
-  </div>
-)
 
-Layout.propTypes = {
-  children: PropTypes.func,
+class Layout extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {navBarVisible: true};
+  }
+  toggleNavBar(){
+    this.setState((prevState)=>({navBarVisible:!prevState.navBarVisible}))
+  }
+  render(){
+    var contentclass = this.state.navBarVisible ? 'content open' : 'content';
+    return (
+      <div>
+        <Helmet
+          title={this.props.data.site.siteMetadata.title}
+          meta={[
+            { name: 'description', content: 'Sample' },
+            { name: 'keywords', content: 'sample, something' },
+          ]}
+        />
+        <NavBar isOpen={this.state.navBarVisible}>
+          <h1>Menu bar content</h1>
+        </NavBar>
+        <div className={contentclass}
+        >
+        <button onClick={()=>(this.toggleNavBar())}/>
+          {this.props.children()}
+        </div>
+      </div>
+    )
+  }
 }
 
 export default Layout
