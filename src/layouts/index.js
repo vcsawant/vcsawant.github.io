@@ -6,16 +6,18 @@ import NavBar from '../components/navbar'
 import './index.css'
 
 
-class Layout extends React.Component{
-  constructor(props){
+class Layout extends React.Component {
+  constructor(props) {
     super(props);
-    this.state = {navBarVisible: true};
+    this.state = { navBarVisible: true };
   }
-  toggleNavBar(){
-    this.setState((prevState)=>({navBarVisible:!prevState.navBarVisible}))
+  toggleNavBar() {
+    this.setState((prevState) => ({ navBarVisible: !prevState.navBarVisible }))
   }
-  render(){
+  render() {
     var contentclass = this.state.navBarVisible ? 'content open' : 'content';
+    var btnclass = this.props.isOpen ? 'navbtn open' : 'navbtn';
+    var icon = this.props.isOpen ? '<' : '>';
     return (
       <div>
         <Helmet
@@ -26,11 +28,10 @@ class Layout extends React.Component{
           ]}
         />
         <NavBar isOpen={this.state.navBarVisible}>
-          <h1>Menu bar content</h1>
         </NavBar>
         <div className={contentclass}
-        >
-        <button onClick={()=>(this.toggleNavBar())}/>
+        > 
+        <button className={btnclass} onClick={() => (this.toggleNavBar())}>{icon}</button>
           {this.props.children()}
         </div>
       </div>
