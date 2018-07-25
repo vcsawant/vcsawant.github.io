@@ -16,6 +16,10 @@ class NavBar extends React.Component {
                 <div className="bottomNav">
                     <h5>{"{"}</h5>
                     <h5>&nbsp;&nbsp;&nbsp;&nbsp;{"\"name\": \"Viren Sawant\","}</h5>
+                    <h5>&nbsp;&nbsp;&nbsp;&nbsp;{"\"description\": \"about.html\","}</h5>
+                    <h5>&nbsp;&nbsp;&nbsp;&nbsp;{"\"projects\": \"experience.html\","}</h5>
+                    <h5>&nbsp;&nbsp;&nbsp;&nbsp;{"\"skills\": \"resume.html\","}</h5>
+                    <h5>{"}"}</h5>
                 </div>
             </div>
         )
