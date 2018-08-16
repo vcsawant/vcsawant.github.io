@@ -1,7 +1,18 @@
 module.exports = {
   pathPrefix: `/project-name`,
   siteMetadata: {
-    title: 'Gatsby Default Starter',
+    title: 'Viren Sawant',
   },
-  plugins: ['gatsby-plugin-react-helmet'],
+  plugins: [
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `assets`,
+        path: `${__dirname}/src/assets/`,
+      },
+    },
+    'gatsby-plugin-react-helmet',
+    'gatsby-transformer-sharp',
+    'gatsby-plugin-sharp',
+  ],
 }
