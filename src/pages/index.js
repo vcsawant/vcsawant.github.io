@@ -65,11 +65,14 @@ const IndexPage = props => (
                 <FontAwesomeIcon icon={faLinkedin} size="3x" />
               </a>
             </li>
-            <li>
+            {
+              // comment out resume with as little effort as possible
+              /* <li>
               <a href={pdf}>
                 <FontAwesomeIcon icon={faAddressCard} size="3x" />
               </a>
-            </li>
+            </li> */
+            }
           </ul>
         </Jumbotron>
       </Row>
