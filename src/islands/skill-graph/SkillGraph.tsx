@@ -13,7 +13,7 @@ import type * as THREE from 'three';
 import { EV, type GraphReadyDetail, type SkillSelectDetail } from '../../lib/events';
 import type { GraphData } from '../../lib/graph';
 import { detectTier, prefersReducedMotion, type GpuTier } from '../../lib/webgl';
-import { useRenderGate } from './use-render-gate';
+import { useRenderGate } from '../use-render-gate';
 import { useDragSpin } from './drag';
 import { createAnim, setFocusTargets, stepAnim } from './anim';
 import { Nodes } from './nodes';

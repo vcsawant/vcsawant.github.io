@@ -5,10 +5,13 @@
  * text, so it can never affect layout or LCP.
  */
 import { site } from '../lib/site';
+import HeroScene from '../islands/hero/HeroScene';
 ---
 
 <section class="hero">
-  <div class="hero-canvas" data-hero-canvas aria-hidden="true"></div>
+  <div class="hero-canvas" data-hero-canvas aria-hidden="true">
+    <HeroScene client:idle />
+  </div>
   <div class="wrap hero-copy">
     <p class="eyebrow">opening</p>
     <h1>Viren Sawant</h1>
@@ -52,7 +55,10 @@ import { site } from '../lib/site';
     position: absolute;
     inset: 0;
     z-index: 0;
-    /* canvas / fallback video / poster mounts here; never in flow */
+    /* canvas / fallback video / poster mounts here; never in flow.
+     * Decorative only: pointer events pass through to text and CTAs.
+     * The fluid sim reads pointer input from the section, not the canvas. */
+    pointer-events: none;
   }
   .hero-copy {
     position: relative;

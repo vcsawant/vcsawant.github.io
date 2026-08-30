@@ -28,6 +28,8 @@ export default defineConfig({
     : {
         command: 'node scripts/serve-dist.mjs',
         url: 'http://127.0.0.1:4173',
-        reuseExistingServer: !process.env.CI,
+        // never reuse: a stale server from a crashed script serves an old build
+        // and produces phantom failures (learned the hard way, 2026-08-30)
+        reuseExistingServer: false,
       },
 });
