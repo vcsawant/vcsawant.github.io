@@ -59,16 +59,19 @@ test.describe('drag and drift', () => {
     const box = (await page.locator('.skill-graph-canvas canvas').boundingBox())!;
     const client = await page.context().newCDPSession(page);
     const y0 = await page.evaluate(() => window.scrollY);
+    // the graph sits low on the page, so on some viewports we're already at max
+    // scroll — swipe in the direction that scrolls UP, always possible from here
+    expect(y0).toBeGreaterThan(0);
     await client.send('Input.synthesizeScrollGesture', {
       x: Math.round(box.x + box.width / 2),
       y: Math.round(box.y + box.height / 2),
-      yDistance: -300,
+      yDistance: 300,
       speed: 800,
       gestureSourceType: 'touch',
     });
     await page.waitForTimeout(400);
     const y1 = await page.evaluate(() => window.scrollY);
-    expect(y1).toBeGreaterThan(y0);
+    expect(y1).toBeLessThan(y0);
   });
 });
 
