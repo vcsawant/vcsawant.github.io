@@ -1,0 +1,30 @@
+---
+import ParticleField from '../../islands-rnd/particles/ParticleField';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <title>R&D — morphing particle field</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0a0e14;
+        overflow: hidden;
+      }
+      #stage {
+        position: fixed;
+        inset: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <ParticleField client:only="react" />
+    </div>
+  </body>
+</html>
