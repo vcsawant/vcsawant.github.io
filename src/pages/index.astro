@@ -1,5 +1,7 @@
 ---
 import { getCollection, getEntries } from 'astro:content';
+import { graphFromContent } from '../lib/graph-from-content';
+import { computeBaseLayout } from '../islands/skill-graph/sim-core';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
@@ -12,6 +14,10 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 // Only skills actually used by at least one project appear in chips and the graph.
 const usedSkillRefs = projects.flatMap((p) => p.data.stack);
 const usedSkills = [...new Map((await getEntries(usedSkillRefs)).map((s) => [s.id, s])).values()];
+
+// Build-time force layout (deterministic, ~10 ms; see sim-core.ts provenance).
+const graph = await graphFromContent();
+const { positions } = computeBaseLayout(graph);
 
 // {{TODO: final meta description from Viren — see CONTENT-TODO.md}}
 const description = 'Personal site of Viren Sawant, technical consultant.';
@@ -43,7 +49,7 @@ const description = 'Personal site of Viren Sawant, technical consultant.';
       below.
     </p>
     <SkillChips skills={usedSkills} />
-    <GraphFallback skills={usedSkills} projects={projects} />
+    <GraphFallback graph={graph} positions={positions} skills={usedSkills} projects={projects} />
   </section>
 </Base>
 

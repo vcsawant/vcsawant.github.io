@@ -1,17 +1,54 @@
 ---
 /*
- * Reserved box for the 3D skill graph. Until Phase 4 it holds a static, styled
- * representation; Task 4.2 replaces the inner content with a build-time SVG of the
- * actual graph layout. The WebGL canvas (Phase 4) mounts into [data-graph-slot]
- * ON TOP of this; this stays in the DOM as the no-JS / no-WebGL / reduced-motion view.
+ * Server-rendered SVG of the actual skill graph, projected from the build-time
+ * 3D force layout. This is simultaneously: the no-JS visual, the no-WebGL
+ * fallback, the reduced-motion "static render of the graph", and the box the
+ * WebGL canvas (Phase 4) mounts over. A visually-hidden list carries the same
+ * information for assistive tech.
  */
 import type { CollectionEntry } from 'astro:content';
+import type { GraphData } from '../lib/graph';
 
 interface Props {
+  graph: GraphData;
+  /** xyz-interleaved base layout, graph.nodes order */
+  positions: Float32Array;
   skills: CollectionEntry<'skills'>[];
   projects: CollectionEntry<'projects'>[];
 }
-const { skills, projects } = Astro.props;
+const { graph, positions, skills, projects } = Astro.props;
+
+// Orthographic projection: drop z for placement, keep it for paint order + depth cue.
+const pts = graph.nodes.map((node, i) => ({
+  node,
+  x: positions[i * 3],
+  y: positions[i * 3 + 1],
+  z: positions[i * 3 + 2],
+}));
+const byId = new Map(pts.map((p) => [p.node.id, p]));
+const zs = pts.map((p) => p.z);
+const zMin = Math.min(...zs);
+const zMax = Math.max(...zs);
+// depth ∈ [0.45, 1]: farther nodes render smaller and dimmer
+const depth = (z: number) => 0.45 + (0.55 * (z - zMin)) / (zMax - zMin || 1);
+const r = (w: number, z: number) => (0.7 + w * 0.42) * depth(z);
+const sorted = [...pts].sort((a, b) => a.z - b.z);
+
+const pad = 7;
+const xs = pts.map((p) => p.x);
+const ys = pts.map((p) => p.y);
+const minX = Math.min(...xs) - pad;
+const minY = Math.min(...ys) - pad;
+const width = Math.max(...xs) + pad - minX;
+const height = Math.max(...ys) + pad - minY;
+
+const labeled = (n: GraphData['nodes'][number]) => n.kind === 'project' || n.weight >= 4;
+// SVG labels must never show placeholder markup; strip {{TODO: …}} noise from titles.
+const svgLabel = (n: GraphData['nodes'][number]) =>
+  n.label
+    .replace(/\{\{TODO[^}]*\}\}\s*/g, '')
+    .trim()
+    .replace(/^$/, 'Project');
 const categories = [
   { id: 'language', label: 'Languages' },
   { id: 'framework', label: 'Frameworks' },
@@ -21,36 +58,85 @@ const categories = [
 ---
 
 <div class="graph-box" data-graph-slot>
-  <div
-    class="graph-static"
+  <svg
+    class="graph-svg"
     data-graph-static
-    role="region"
-    aria-label="Skills by category"
-    tabindex="0"
+    viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${width.toFixed(1)} ${height.toFixed(1)}`}
+    role="img"
+    aria-label={`Map of ${skills.length} technologies connected to ${projects.length} projects. The same information is listed below for screen readers, and each technology is a filter button above.`}
   >
-    <p class="graph-note">
-      {projects.length} projects &middot; {skills.length} technologies
-    </p>
+    <g class="edges">
+      {
+        graph.edges.map((e) => {
+          const a = byId.get(e.source);
+          const b = byId.get(e.target);
+          if (!a || !b) return null;
+          return (
+            <line
+              x1={a.x.toFixed(2)}
+              y1={a.y.toFixed(2)}
+              x2={b.x.toFixed(2)}
+              y2={b.y.toFixed(2)}
+              opacity={(0.35 * Math.min(depth(a.z), depth(b.z))).toFixed(2)}
+            />
+          );
+        })
+      }
+    </g>
+    <g class="nodes">
+      {
+        sorted.map(({ node, x, y, z }) => (
+          <circle
+            cx={x.toFixed(2)}
+            cy={y.toFixed(2)}
+            r={r(node.weight, z).toFixed(2)}
+            data-category={node.category}
+            opacity={depth(z).toFixed(2)}
+          />
+        ))
+      }
+    </g>
+    <g class="labels">
+      {
+        sorted
+          .filter((p) => labeled(p.node))
+          .map(({ node, x, y, z }) => (
+            <text
+              x={x.toFixed(2)}
+              y={(node.kind === 'project'
+                ? y + r(node.weight, z) + 2.4
+                : y - r(node.weight, z) - 1.1
+              ).toFixed(2)}
+              data-kind={node.kind}
+              opacity={depth(z).toFixed(2)}
+            >
+              {svgLabel(node)}
+            </text>
+          ))
+      }
+    </g>
+  </svg>
+
+  <div class="visually-hidden">
+    <h3>Technologies by category</h3>
     <dl>
       {
         categories.map((c) => (
-          <div class="cat">
+          <div>
             <dt>{c.label}</dt>
             <dd>
-              <ul>
-                {skills
-                  .filter((s) => s.data.category === c.id)
-                  .map((s) => (
-                    <li data-category={c.id}>
-                      <span class="dot" aria-hidden="true" />
-                      {s.data.label}
-                    </li>
-                  ))}
-              </ul>
+              {skills
+                .filter((s) => s.data.category === c.id)
+                .map((s) => s.data.label)
+                .join(', ')}
             </dd>
           </div>
         ))
       }
+      <div>
+        <dt>Projects</dt>
+        <dd>{projects.map((p) => p.data.title).join(', ')}</dd>
+      </div>
     </dl>
   </div>
 </div>
@@ -64,66 +150,54 @@ const categories = [
     width: 100%;
     border: 1px solid var(--color-line);
     border-radius: var(--radius-md);
-    background: var(--color-bg-deep);
+    background: radial-gradient(
+      90% 90% at 50% 40%,
+      color-mix(in srgb, var(--color-surface) 55%, var(--color-bg-deep)),
+      var(--color-bg-deep) 75%
+    );
     overflow: hidden;
   }
-  .graph-static {
+  .graph-svg {
     position: absolute;
     inset: 0;
-    display: grid;
-    align-content: center;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    /* fades out (opacity only) when the WebGL canvas takes over; stays in DOM */
+    transition: opacity var(--dur-slow) var(--ease-out);
   }
-  .graph-note {
+  .edges line {
+    stroke: var(--color-text-muted);
+    stroke-width: 0.16;
+  }
+  .nodes circle {
+    fill: var(--color-text-muted);
+  }
+  .nodes circle[data-category='language'] {
+    fill: var(--node-language);
+  }
+  .nodes circle[data-category='framework'] {
+    fill: var(--node-framework);
+  }
+  .nodes circle[data-category='platform'] {
+    fill: var(--node-platform);
+  }
+  .nodes circle[data-category='practice'] {
+    fill: var(--node-practice);
+  }
+  .nodes circle[data-category='project'] {
+    fill: none;
+    stroke: var(--node-project);
+    stroke-width: 0.45;
+  }
+  .labels text {
     font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
+    font-size: 1.5px;
+    letter-spacing: 0.08em;
+    fill: var(--color-text-muted);
+    text-anchor: middle;
   }
-  dl {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-    gap: var(--space-4);
-  }
-  dt {
-    font-family: var(--font-display);
-    font-size: var(--text-base);
-    margin-bottom: var(--space-2);
-  }
-  dd {
-    margin: 0;
-  }
-  ul {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: var(--space-1);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-  }
-  li {
-    display: flex;
-    align-items: center;
-    gap: 0.45em;
-  }
-  .dot {
-    width: 0.5em;
-    height: 0.5em;
-    border-radius: 50%;
-  }
-  li[data-category='language'] .dot {
-    background: var(--node-language);
-  }
-  li[data-category='framework'] .dot {
-    background: var(--node-framework);
-  }
-  li[data-category='platform'] .dot {
-    background: var(--node-platform);
-  }
-  li[data-category='practice'] .dot {
-    background: var(--node-practice);
+  .labels text[data-kind='project'] {
+    fill: var(--color-text);
+    font-size: 1.85px;
   }
 </style>

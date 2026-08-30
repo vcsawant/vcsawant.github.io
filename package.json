@@ -16,7 +16,8 @@
     "lh": "lhci autorun",
     "test:e2e": "playwright test",
     "serve": "node scripts/serve-dist.mjs",
-    "postbuild": "node scripts/prune-dist.mjs"
+    "postbuild": "node scripts/prune-dist.mjs",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
@@ -43,6 +44,7 @@
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "typescript-eslint": "^8.68.0",
+    "vitest": "^4.1.11",
     "wrangler": "^4.127.1"
   }
 }

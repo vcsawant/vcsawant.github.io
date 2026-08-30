@@ -728,6 +728,11 @@ labels for weight ≥ 4 nodes, colors from tokens)
 **Depends on:** 4.1, R2 report
 **Acceptance:** SVG renders in `dist/index.html` (view-source shows `<svg`); deterministic
 (seeded RNG) so rebuilds don't churn git; nodes non-overlapping at default weights.
+**Execution note (2026-08-30):** implemented WITHOUT `scripts/compute-layout.mjs` or a
+committed `layout.json` — the base layout is computed in Astro frontmatter at build time via
+`src/islands/skill-graph/sim-core.ts` (R2's validated core: seeded golden-spiral init, no RNG,
+7–15 ms per build). Same determinism guarantee, no committed artifact to churn, no Node-side
+frontmatter parsing. Determinism verified by double-build diff of the emitted SVG.
 **Verify:** `npm run build && grep -c '<svg' dist/index.html` → ≥ 1; run build twice,
 `git diff --exit-code src/data/layout.json` → clean.
 
