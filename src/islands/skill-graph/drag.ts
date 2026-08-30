@@ -40,7 +40,7 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
       s.pointerId = e.pointerId;
       s.isTouch = e.pointerType === 'touch';
       s.captured = !s.isTouch; // mouse captures immediately, touch waits for intent
-      if (s.captured) el.setPointerCapture(e.pointerId);
+      if (s.captured) capture(el, e.pointerId);
       s.startX = s.lastX = e.clientX;
       s.startY = s.lastY = e.clientY;
       s.lastT = performance.now();
@@ -57,7 +57,7 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
         const totalY = Math.abs(e.clientY - s.startY);
         if (totalX > CAPTURE_PX && totalX > totalY) {
           s.captured = true;
-          el.setPointerCapture(e.pointerId);
+          capture(el, e.pointerId);
         } else if (totalY > CAPTURE_PX * 2) {
           s.pointerId = -1; // clearly a scroll — give the gesture back to the page
           return;
@@ -117,3 +117,13 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+// setPointerCapture can throw (pointer already gone, synthetic events); capture is
+// an optimization — losing it degrades gracefully, so never let it break the drag.
+function capture(el: Element, pointerId: number): void {
+  try {
+    el.setPointerCapture(pointerId);
+  } catch {
+    /* noop */
+  }
+}

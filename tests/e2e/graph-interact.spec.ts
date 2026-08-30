@@ -53,25 +53,46 @@ test.describe('drag and drift', () => {
     expect(later).toBeGreaterThan(atRelease);
   });
 
-  test('vertical touch swipe over the canvas scrolls the page', async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'CDP-only');
+  test('touch contract: pan-y preserved, vertical released, horizontal rotates', async ({
+    page,
+  }) => {
+    // CDP scroll-gesture synthesis is a no-op on headless Linux, so this tests
+    // OUR side of the contract deterministically: touch-action stays pan-y (the
+    // browser guarantee for native vertical scroll), vertical touch gestures are
+    // given back (no rotation), horizontal ones spin the graph. Real scroll feel
+    // is covered by the on-device pass (Task 7.3).
     await openGraph(page);
-    const box = (await page.locator('.skill-graph-canvas canvas').boundingBox())!;
-    const client = await page.context().newCDPSession(page);
-    const y0 = await page.evaluate(() => window.scrollY);
-    // the graph sits low on the page, so on some viewports we're already at max
-    // scroll — swipe in the direction that scrolls UP, always possible from here
-    expect(y0).toBeGreaterThan(0);
-    await client.send('Input.synthesizeScrollGesture', {
-      x: Math.round(box.x + box.width / 2),
-      y: Math.round(box.y + box.height / 2),
-      yDistance: 300,
-      speed: 800,
-      gestureSourceType: 'touch',
-    });
-    await page.waitForTimeout(400);
-    const y1 = await page.evaluate(() => window.scrollY);
-    expect(y1).toBeLessThan(y0);
+    await expect(page.locator('.skill-graph-canvas canvas')).toHaveCSS('touch-action', 'pan-y');
+
+    const fire = (type: string, x: number, y: number) =>
+      page.evaluate(
+        ([type, x, y]) => {
+          document.querySelector('.skill-graph-canvas canvas')!.dispatchEvent(
+            new PointerEvent(type as string, {
+              pointerId: 7,
+              pointerType: 'touch',
+              isPrimary: true,
+              clientX: x as number,
+              clientY: y as number,
+              bubbles: true,
+            }),
+          );
+        },
+        [type, x, y] as const,
+      );
+
+    const r0 = await rotY(page);
+    await fire('pointerdown', 200, 300);
+    for (let i = 1; i <= 6; i++) await fire('pointermove', 200, 300 + i * 20);
+    await fire('pointerup', 200, 420);
+    const r1 = await rotY(page);
+    expect(Math.abs(r1 - r0)).toBeLessThan(0.15); // drift only — gesture not captured
+
+    await fire('pointerdown', 200, 300);
+    for (let i = 1; i <= 6; i++) await fire('pointermove', 200 + i * 30, 300);
+    await fire('pointerup', 380, 300);
+    const r2 = await rotY(page);
+    expect(r2 - r1).toBeGreaterThan(0.5); // 180px * 0.005 rad/px, minus capture slop
   });
 });
 
