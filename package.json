@@ -16,11 +16,13 @@
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
+    "@react-three/fiber": "^9.7.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "astro": "^7.2.9",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
   },
   "allowScripts": {
     "esbuild": true
@@ -29,6 +31,7 @@
     "@astrojs/check": "^0.9.10",
     "@eslint/js": "^9.39.5",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@types/three": "^0.185.4",
     "eslint": "^9.39.5",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
