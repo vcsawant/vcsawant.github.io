@@ -1,0 +1,39 @@
+---
+// R&D route: force-layout strategy prototype (see docs/rnd/layout/report.md).
+// The base layout is computed HERE, at build time, and shipped as static props;
+// d3-force-3d never enters the main-thread client bundle (the worker gets its
+// own chunk).
+import { buildGraph } from '../../islands-rnd/layout/graph';
+import { computeBaseLayout } from '../../islands-rnd/layout/simCore';
+import LayoutGraph from '../../islands-rnd/layout/LayoutGraph';
+
+const graph = buildGraph();
+const t0 = performance.now();
+const base = computeBaseLayout(graph);
+const buildLayoutMs = performance.now() - t0;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>R&amp;D: force layout</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b0f17;
+      }
+    </style>
+  </head>
+  <body>
+    <LayoutGraph
+      client:only="react"
+      basePositions={Array.from(base.positions)}
+      baseTicks={base.ticks}
+      buildLayoutMs={buildLayoutMs}
+    />
+  </body>
+</html>
