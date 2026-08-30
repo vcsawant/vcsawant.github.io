@@ -46,7 +46,11 @@ ctx.addEventListener('message', (ev) => {
   const step = (): void => {
     if (token !== jobToken) return; // superseded by a newer reorganize
     const b0 = performance.now();
-    for (let i = 0; i < TICKS_PER_BATCH && sim.alpha() > sim.alphaMin() && ticks < FOCUS_TICKS * 2; i++) {
+    for (
+      let i = 0;
+      i < TICKS_PER_BATCH && sim.alpha() > sim.alphaMin() && ticks < FOCUS_TICKS * 2;
+      i++
+    ) {
       sim.tick();
       ticks++;
     }

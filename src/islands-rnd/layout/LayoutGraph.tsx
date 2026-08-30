@@ -98,7 +98,8 @@ function GraphScene({
     if (!mesh) return;
     for (let i = 0; i < n; i++) {
       const node = graph.nodes[i];
-      const c = node.id === focusId ? FOCUS_COLOR : node.kind === 'project' ? HUB_COLOR : SKILL_COLOR;
+      const c =
+        node.id === focusId ? FOCUS_COLOR : node.kind === 'project' ? HUB_COLOR : SKILL_COLOR;
       mesh.setColorAt(i, c);
     }
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -127,7 +128,8 @@ function GraphScene({
     for (let i = 0; i < n; i++) {
       const node = graph.nodes[i];
       dummy.position.set(displayed[i * 3], displayed[i * 3 + 1], displayed[i * 3 + 2]);
-      const s = (node.kind === 'project' ? 0.34 : 0.26) * node.weight * (node.id === focusId ? 1.35 : 1);
+      const s =
+        (node.kind === 'project' ? 0.34 : 0.26) * node.weight * (node.id === focusId ? 1.35 : 1);
       dummy.scale.setScalar(s);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);

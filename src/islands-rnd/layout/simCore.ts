@@ -74,7 +74,8 @@ function toSimLinks(edges: GraphEdge[], kinds: Map<string, NodeKind>): SimLink[]
   return edges.map((e) => ({
     source: e.source,
     target: e.target,
-    kind: kinds.get(e.source) === 'project' || kinds.get(e.target) === 'project' ? 'hub' : 'affinity',
+    kind:
+      kinds.get(e.source) === 'project' || kinds.get(e.target) === 'project' ? 'hub' : 'affinity',
   }));
 }
 
@@ -193,6 +194,9 @@ export function buildFocusSim(
   // alpha schedule sized so the sim settles in ~FOCUS_TICKS ticks.
   const alpha0 = 0.6;
   const alphaMin = 0.001;
-  sim.alpha(alpha0).alphaMin(alphaMin).alphaDecay(1 - Math.pow(alphaMin / alpha0, 1 / FOCUS_TICKS));
+  sim
+    .alpha(alpha0)
+    .alphaMin(alphaMin)
+    .alphaDecay(1 - Math.pow(alphaMin / alpha0, 1 / FOCUS_TICKS));
   return sim;
 }
