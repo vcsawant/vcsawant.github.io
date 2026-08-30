@@ -1,11 +1,15 @@
-import { Component, useEffect, useState, type ReactNode } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { EV, type GraphReadyDetail } from '../../lib/events';
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import type * as THREE from 'three';
+import { EV, type GraphReadyDetail, type SkillSelectDetail } from '../../lib/events';
 import type { GraphData } from '../../lib/graph';
 import { detectTier, prefersReducedMotion, type GpuTier } from '../../lib/webgl';
 import { useRenderGate } from './use-render-gate';
+import { useDragSpin } from './drag';
+import { createAnim, setFocusTargets, stepAnim } from './anim';
 import { Nodes } from './nodes';
 import { Edges } from './edges';
+import type { WorkerOutMsg } from './protocol';
 
 export interface SkillGraphProps {
   graph: GraphData;
@@ -15,14 +19,24 @@ export interface SkillGraphProps {
 
 type Mode = 'pending' | 'webgl' | 'fallback' | 'static';
 
+declare global {
+  interface Window {
+    __graphDebug?: {
+      mode: string;
+      tier: GpuTier;
+      calls: number;
+      focusId: string | null;
+      rotationY: number;
+    };
+  }
+}
+
 function announce(mode: GraphReadyDetail['mode']): void {
   window.dispatchEvent(new CustomEvent<GraphReadyDetail>(EV.graphReady, { detail: { mode } }));
 }
 
-declare global {
-  interface Window {
-    __graphDebug?: { mode: string; tier: GpuTier; calls: number };
-  }
+function dispatchSelect(skillId: string | null): void {
+  window.dispatchEvent(new CustomEvent<SkillSelectDetail>(EV.skillSelect, { detail: { skillId } }));
 }
 
 /* If the WebGL context dies mid-session (or R3F throws during setup), fall back
@@ -43,23 +57,90 @@ class CanvasBoundary extends Component<{ onFail: () => void; children: ReactNode
 function GraphScene({ graph, positions }: SkillGraphProps) {
   useRenderGate();
   const gl = useThree((s) => s.gl);
+  const groupRef = useRef<THREE.Group>(null);
+  useDragSpin(groupRef);
+
+  const anim = useMemo(() => createAnim(graph, positions), [graph, positions]);
+  const focusRef = useRef<string | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+
+  // The single owner of graph focus inside the island. The window event is the
+  // source of truth: chips, Escape, and canvas taps all dispatch it; this
+  // listener applies it (and guards echo loops by comparing against current).
+  useEffect(() => {
+    const worker = new Worker(new URL('./layout.worker.ts', import.meta.url), { type: 'module' });
+    workerRef.current = worker;
+    worker.onmessage = (ev: MessageEvent<WorkerOutMsg>) => {
+      if (ev.data.type === 'positions') {
+        anim.tgt.set(ev.data.positions);
+        anim.animating = true;
+      }
+    };
+
+    const onSelect = (e: Event) => {
+      const { skillId } = (e as CustomEvent<SkillSelectDetail>).detail;
+      if (skillId === focusRef.current) return;
+      focusRef.current = skillId;
+      if (window.__graphDebug) window.__graphDebug.focusId = skillId;
+      worker.postMessage({
+        type: 'reorganize',
+        focusId: skillId,
+        graph,
+        positions: Float32Array.from(positions),
+      });
+      setFocusTargets(anim, graph, skillId);
+    };
+    window.addEventListener(EV.skillSelect, onSelect);
+
+    return () => {
+      window.removeEventListener(EV.skillSelect, onSelect);
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, [anim, graph, positions]);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     const id = setTimeout(() => {
       const calls = gl.info.render.calls;
-      window.__graphDebug = { ...window.__graphDebug!, calls };
+      if (window.__graphDebug) window.__graphDebug.calls = calls;
       console.assert(calls <= 4, `skill-graph draw calls: ${calls} (expected <= 4)`);
     }, 500);
     return () => clearTimeout(id);
   }, [gl]);
 
+  useFrame((_, delta) => {
+    stepAnim(anim, Math.min(delta, 0.1));
+    if (window.__graphDebug && groupRef.current) {
+      window.__graphDebug.rotationY = groupRef.current.rotation.y;
+    }
+  });
+
+  const requestSelect = (id: string) => {
+    dispatchSelect(id === focusRef.current ? null : id);
+  };
+
   return (
     <>
-      <ambientLight intensity={1.1} />
-      <directionalLight position={[8, 12, 18]} intensity={1.4} />
-      <Nodes graph={graph} positions={positions} />
-      <Edges graph={graph} positions={positions} />
+      <group ref={groupRef}>
+        <ambientLight intensity={1.1} />
+        <directionalLight position={[8, 12, 18]} intensity={1.4} />
+        <Nodes graph={graph} anim={anim} onSelect={requestSelect} />
+        <Edges anim={anim} />
+      </group>
+      {/* invisible raycast catcher: a tap that misses every node clears the
+          selection. Node clicks stopPropagation before reaching this. Not
+          rendered (visible=false) — raycasting ignores visibility. */}
+      <mesh
+        visible={false}
+        position={[0, 0, -24]}
+        onClick={(e) => {
+          if (e.delta > 6) return; // drag release, not a tap
+          if (focusRef.current !== null) dispatchSelect(null);
+        }}
+      >
+        <planeGeometry args={[400, 400]} />
+      </mesh>
     </>
   );
 }
@@ -72,7 +153,7 @@ export default function SkillGraph({ graph, positions }: SkillGraphProps) {
     const m: Mode = prefersReducedMotion() ? 'static' : t === 'none' ? 'fallback' : 'webgl';
     setMode(m);
     if (m !== 'webgl') announce(m); // webgl is announced only once the context truly exists
-    if (import.meta.env.DEV) window.__graphDebug = { mode: m, tier: t, calls: 0 };
+    window.__graphDebug = { mode: m, tier: t, calls: 0, focusId: null, rotationY: 0 };
   }, []);
 
   const fail = () => {
