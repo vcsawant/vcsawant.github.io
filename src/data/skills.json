@@ -1,0 +1,18 @@
+[
+  { "id": "elixir", "label": "Elixir", "category": "language", "weight": 4 },
+  { "id": "phoenix-liveview", "label": "Phoenix LiveView", "category": "framework", "weight": 4 },
+  { "id": "typescript", "label": "TypeScript", "category": "language", "weight": 5 },
+  { "id": "react", "label": "React", "category": "framework", "weight": 5 },
+  { "id": "nextjs", "label": "Next.js", "category": "framework", "weight": 4 },
+  { "id": "astro", "label": "Astro", "category": "framework", "weight": 3 },
+  { "id": "nodejs", "label": "Node.js", "category": "platform", "weight": 4 },
+  { "id": "postgres", "label": "PostgreSQL", "category": "platform", "weight": 4 },
+  { "id": "flyio", "label": "Fly.io", "category": "platform", "weight": 3 },
+  { "id": "vercel", "label": "Vercel", "category": "platform", "weight": 3 },
+  { "id": "cloudflare", "label": "Cloudflare", "category": "platform", "weight": 3 },
+  { "id": "webgl", "label": "WebGL", "category": "practice", "weight": 3 },
+  { "id": "threejs", "label": "Three.js", "category": "framework", "weight": 3 },
+  { "id": "graphql", "label": "GraphQL", "category": "practice", "weight": 3 },
+  { "id": "tailwind", "label": "Tailwind CSS", "category": "framework", "weight": 3 },
+  { "id": "cicd", "label": "CI/CD", "category": "practice", "weight": 4 }
+]

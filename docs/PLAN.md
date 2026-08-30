@@ -364,8 +364,11 @@ export const collections = { skills, projects };
 
 **Acceptance:** `getCollection('projects')` type-checks; invalid frontmatter fails the build;
 every `stack` reference resolves to a real skill id.
-**Verify:** `npx astro check && npm run build` → 0 errors. Then break one `stack` ref
-temporarily → build fails → revert (proves references validate).
+**Verify:** `npx astro check && npm run build` → 0 errors.
+**Execution note (2026-08-30):** the broken-reference negative test does NOT fail the build at
+this task — reference integrity is only enforced when a page resolves `stack` via
+`getEntries()`, which first happens in Task 2.4. The negative test moved there (see Task 2.4
+verify).
 
 ### Task 1.4: Shared event contract + CI check workflow
 
@@ -445,7 +448,10 @@ via aspect-ratio so later canvas mount causes zero CLS.
 filtering contract with `filter-projects.ts`); card links work; placeholder copy visibly
 marked; `placeholder: true` projects render a subtle "copy pending" badge in dev builds only
 (`import.meta.env.DEV`).
-**Verify:** `npm run build`; `grep -c 'data-project' dist/index.html` → `3`.
+**Verify:** `npm run build`; `grep -c 'data-project' dist/index.html` → `3`. Also run the
+negative test deferred from Task 1.3: temporarily change one project's `stack` entry to
+`not-a-real-skill` → `npm run build` must FAIL (cards resolve references via `getEntries`) →
+revert.
 
 ### Task 2.5: Skills section — server-rendered chips + graph fallback slot
 
