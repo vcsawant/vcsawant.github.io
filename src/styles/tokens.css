@@ -1,0 +1,72 @@
+/*
+ * Design tokens — "club room, after the match".
+ * Deep felt green, bone ivory, brass and verdigris: chess materials, not terminal green.
+ * The WebGL islands read these via getComputedStyle — renaming a token is a breaking change
+ * for the canvas code (see src/lib/theme.ts once it exists).
+ */
+:root {
+  /* color */
+  --color-bg: #0e1411;
+  --color-bg-deep: #0a0f0c;
+  --color-surface: #17201b;
+  --color-line: #27332b;
+  --color-text: #e9e4d6;
+  --color-text-muted: #a3afa3;
+  --color-accent: #c9a45c;
+  --color-accent-2: #7fb6a0;
+
+  /* graph node categories (canvas + svg + chips share these) */
+  --node-language: #c9a45c;
+  --node-framework: #7fb6a0;
+  --node-platform: #b0bdd8;
+  --node-practice: #a3afa3;
+  --node-project: #e9e4d6;
+
+  /* type */
+  --font-display: 'Gambetta', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-body:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+
+  --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+  --text-sm: clamp(0.85rem, 0.82rem + 0.15vw, 0.95rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --text-xl: clamp(1.6rem, 1.35rem + 1.2vw, 2.4rem);
+  --text-2xl: clamp(2.2rem, 1.7rem + 2.6vw, 4rem);
+  --text-hero: clamp(2.9rem, 2rem + 4.5vw, 6rem);
+
+  /* space (rem-based scale) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+  --space-7: 6.5rem;
+  --space-8: 10rem;
+
+  /* shape + misc */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --measure: 62ch;
+  --content-max: 72rem;
+  --focus-ring: 2px solid var(--color-accent);
+  --focus-offset: 3px;
+
+  /* motion — JS and CSS both read this; flipped by reduced-motion below */
+  --motion-ok: 1;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-quick: 180ms;
+  --dur-slow: 600ms;
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-ok: 0;
+    --dur-quick: 0ms;
+    --dur-slow: 0ms;
+  }
+}

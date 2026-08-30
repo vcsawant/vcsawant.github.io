@@ -1,0 +1,75 @@
+---
+const links = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/resume.pdf', label: 'Resume' },
+];
+---
+
+<header class="site-nav">
+  <nav class="wrap" aria-label="Site">
+    <a class="home" href="/" aria-label="Viren Sawant — home">
+      <span aria-hidden="true">&#9822;</span>
+      <span class="home-name">Viren Sawant</span>
+    </a>
+    <ul>
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href}>{l.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-3);
+  }
+  .home {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+  .home > span[aria-hidden] {
+    color: var(--color-accent);
+  }
+  ul {
+    display: flex;
+    gap: var(--space-4);
+    list-style: none;
+    padding: 0;
+  }
+  ul a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    letter-spacing: 0.04em;
+  }
+  ul a:hover,
+  ul a:focus-visible {
+    color: var(--color-text);
+  }
+  @media (max-width: 480px) {
+    .home-name {
+      display: none;
+    }
+  }
+</style>
