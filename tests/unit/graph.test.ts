@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildGraph, type ProjectInput, type SkillInput } from '../../src/lib/graph';
+import {
+  buildGraph,
+  neighborsOf,
+  nodeIndexMap,
+  type ProjectInput,
+  type SkillInput,
+} from '../../src/lib/graph';
 
 const skills: SkillInput[] = [
   { id: 'elixir', label: 'Elixir', category: 'language', weight: 4 },
@@ -53,6 +59,19 @@ describe('buildGraph', () => {
     const g2 = buildGraph(skills, projects);
     expect(new Set(g1.nodes.map((n) => n.id)).size).toBe(g1.nodes.length);
     expect(g1).toEqual(g2);
+  });
+
+  it('neighborsOf returns connected node ids in both directions', () => {
+    const g = buildGraph(skills, projects);
+    expect(neighborsOf(g, 'tracker')).toEqual(new Set(['typescript', 'react']));
+    expect(neighborsOf(g, 'elixir')).toEqual(new Set(['bughouse']));
+  });
+
+  it('nodeIndexMap maps every node id to its array index', () => {
+    const g = buildGraph(skills, projects);
+    const m = nodeIndexMap(g);
+    expect(m.size).toBe(g.nodes.length);
+    g.nodes.forEach((n, i) => expect(m.get(n.id)).toBe(i));
   });
 
   it('throws on a stack reference to an unknown skill', () => {

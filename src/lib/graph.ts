@@ -37,6 +37,21 @@ export interface GraphData {
   edges: GraphEdge[];
 }
 
+export function nodeIndexMap(graph: GraphData): Map<string, number> {
+  const m = new Map<string, number>();
+  graph.nodes.forEach((n, i) => m.set(n.id, i));
+  return m;
+}
+
+export function neighborsOf(graph: GraphData, id: string): Set<string> {
+  const out = new Set<string>();
+  for (const e of graph.edges) {
+    if (e.source === id) out.add(e.target);
+    if (e.target === id) out.add(e.source);
+  }
+  return out;
+}
+
 export function buildGraph(skills: SkillInput[], projects: ProjectInput[]): GraphData {
   const skillById = new Map(skills.map((s) => [s.id, s]));
   const usedSkillIds = new Set<string>();
