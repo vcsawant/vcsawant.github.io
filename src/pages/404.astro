@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found — Viren Sawant" description="This page does not exist.">
+  <section class="lost wrap">
+    <p class="eyebrow">illegal move</p>
+    <h1>404 &middot; no such square</h1>
+    <p>This page isn&rsquo;t on the board. The game continues from the start position.</p>
+    <p><a href="/">&larr; Back to the site</a></p>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    min-height: 50dvh;
+    display: grid;
+    align-content: center;
+    gap: var(--space-3);
+    padding-block: var(--space-7);
+  }
+  h1 {
+    font-size: var(--text-2xl);
+  }
+</style>

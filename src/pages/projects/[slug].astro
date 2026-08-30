@@ -1,0 +1,97 @@
+---
+import { getCollection, getEntries, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const stack = await getEntries(project.data.stack);
+const { Content } = await render(project);
+---
+
+<Base title={`${project.data.title} — Viren Sawant`} description={project.data.summary}>
+  <article class="project wrap">
+    <header>
+      <p class="eyebrow">middlegame &middot; {project.data.role}</p>
+      <h1>{project.data.title}</h1>
+      <ul class="stack" aria-label="Built with">
+        {
+          stack.map((s) => (
+            <li>
+              <a href={`/#skills`} data-category={s.data.category}>
+                {s.data.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <div class="body">
+      <Content />
+    </div>
+
+    {
+      (project.data.links.live || project.data.links.repo) && (
+        <p class="links">
+          {project.data.links.live && <a href={project.data.links.live}>Visit the live app</a>}
+          {project.data.links.repo && <a href={project.data.links.repo}>View the source</a>}
+        </p>
+      )
+    }
+
+    <p class="back"><a href="/#work">&larr; Back to selected work</a></p>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding-block: var(--space-6);
+  }
+  h1 {
+    font-size: var(--text-2xl);
+    margin-block: var(--space-2) var(--space-3);
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin-bottom: var(--space-5);
+  }
+  .stack a {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: var(--text-sm);
+  }
+  .stack a:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+  }
+  .body {
+    font-size: var(--text-base);
+    color: var(--color-text);
+  }
+  .body :global(p) {
+    margin-block: var(--space-3);
+  }
+  .links {
+    margin-top: var(--space-5);
+    display: flex;
+    gap: var(--space-4);
+  }
+  .back {
+    margin-top: var(--space-6);
+  }
+</style>
