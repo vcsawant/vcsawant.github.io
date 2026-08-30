@@ -25,3 +25,6 @@ pnpm-debug.log*
 .claude/
 .lighthouseci/
 .wrangler/
+test-results/
+playwright-report/
+.playwright-mcp/

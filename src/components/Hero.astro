@@ -4,6 +4,7 @@
  * (Phase 5) mounts inside [data-hero-canvas], absolutely positioned BEHIND this
  * text, so it can never affect layout or LCP.
  */
+import { site } from '../lib/site';
 ---
 
 <section class="hero">
@@ -18,7 +19,17 @@
     </p>
     <div class="cta-row">
       <a class="cta primary" href="#work">See the work</a>
-      <a class="cta" href="/resume.pdf">Resume (PDF)</a>
+      {
+        site.resumeAvailable ? (
+          <a class="cta" href="/resume.pdf">
+            Resume (PDF)
+          </a>
+        ) : (
+          <a class="cta" href="#contact">
+            Get in touch
+          </a>
+        )
+      }
     </div>
   </div>
 </section>

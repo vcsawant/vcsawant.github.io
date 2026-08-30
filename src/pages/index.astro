@@ -13,8 +13,8 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 const usedSkillRefs = projects.flatMap((p) => p.data.stack);
 const usedSkills = [...new Map((await getEntries(usedSkillRefs)).map((s) => [s.id, s])).values()];
 
-const description =
-  'Viren Sawant — technical consultant and co-founder. Elixir, TypeScript, and the unglamorous work of shipping.';
+// {{TODO: final meta description from Viren — see CONTENT-TODO.md}}
+const description = 'Personal site of Viren Sawant, technical consultant.';
 ---
 
 <Base title="Viren Sawant — Technical Consultant" description={description}>

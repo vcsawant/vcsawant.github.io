@@ -1,7 +1,7 @@
 ---
 title: 'Multiplayer Bughouse Chess'
 summary: '{{TODO: one-sentence summary from Viren — real-time multiplayer bughouse chess. See CONTENT-TODO.md}}'
-role: 'Design, build, deploy'
+role: 'Personal project'
 stack: [elixir, phoenix-liveview, postgres, flyio]
 links: {}
 featured: true

@@ -15,21 +15,17 @@
     "format:check": "prettier --check .",
     "lh": "lhci autorun",
     "test:e2e": "playwright test",
-    "serve": "node scripts/serve-dist.mjs"
+    "serve": "node scripts/serve-dist.mjs",
+    "postbuild": "node scripts/prune-dist.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
     "@react-three/fiber": "^9.7.0",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
     "astro": "^7.2.9",
     "d3-force-3d": "^3.0.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "three": "^0.185.1"
-  },
-  "allowScripts": {
-    "esbuild": true
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -38,6 +34,8 @@
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
     "@types/three": "^0.185.4",
     "eslint": "^9.39.5",
     "eslint-plugin-astro": "^1.7.0",

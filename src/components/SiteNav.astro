@@ -1,8 +1,10 @@
 ---
+import { site } from '../lib/site';
+
 const links = [
   { href: '/#work', label: 'Work' },
   { href: '/#skills', label: 'Skills' },
-  { href: '/resume.pdf', label: 'Resume' },
+  ...(site.resumeAvailable ? [{ href: '/resume.pdf', label: 'Resume' }] : []),
 ];
 ---
 

@@ -103,6 +103,9 @@ if its own acceptance criteria pass.
 - `dpr` capped at `[1, 1.5]`; particle counts scaled down on mobile; `frameloop="demand"` when
   static; render loop paused on tab blur and off-viewport (IntersectionObserver).
 - Animate transforms and opacity only. No layout-triggering properties in any animation.
+  (Execution interpretation, confirmed at CR-2: the operative clause is "no layout-triggering
+  properties" — paint-only hover transitions such as `border-color`/`color` are permitted;
+  anything touching layout (width/height/top/left/margin/padding) is not, anywhere.)
 - Keyboard navigable, visible focus states. Skill graph has a non-pointer path to the same
   information.
 - Never invent biography/copy. Placeholders are marked `{{TODO: …}}` and tracked in

@@ -29,7 +29,13 @@ const types = {
 };
 
 function resolve(url) {
-  const clean = normalize(decodeURIComponent(url.split('?')[0])).replaceAll('..', '');
+  let decoded;
+  try {
+    decoded = decodeURIComponent(url.split('?')[0]);
+  } catch {
+    return { file: join(root, '404.html'), status: 404 };
+  }
+  const clean = normalize(decoded).replaceAll('..', '');
   const candidates = [
     join(root, clean),
     join(root, clean, 'index.html'),

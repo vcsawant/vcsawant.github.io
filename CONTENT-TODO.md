@@ -22,10 +22,19 @@ project frontmatter (where applicable), and check it off here.
 
 ## Links & assets
 
-- [ ] **LinkedIn URL** — `src/components/SiteFooter.astro`
-- [ ] **GitHub URL** — `src/components/SiteFooter.astro`
-- [ ] **Current resume PDF** — drop at `public/resume.pdf` (the 2019 one lives only in the
-      `archive/gatsby-2018` tag and should not be reused).
+All identity links live in `src/lib/site.ts` — links render only when set, so nothing broken
+ever ships.
+
+- [ ] **LinkedIn URL** — set `site.linkedin` in `src/lib/site.ts` (currently omitted from the
+      footer).
+- [x] **GitHub URL** — `https://github.com/vcsawant` (set in `src/lib/site.ts`).
+- [ ] **Current resume PDF** — drop at `public/resume.pdf`, then flip
+      `site.resumeAvailable = true` in `src/lib/site.ts` (restores the nav link, hero CTA, and
+      footer link). The 2019 one lives only in the `archive/gatsby-2018` tag; don't reuse it.
+- [ ] **Meta description** — `src/pages/index.astro` — currently a neutral one-liner; wants a
+      real one from Viren.
+- [ ] **Project role labels** — confirm `role:` frontmatter wording in all three
+      `src/content/projects/*.md` (currently: "Personal project" / "Technical delivery" ×2).
 - [ ] **OG image decision** — Phase 8: static designed 1200×630; needs final say on whether
       it's a graph render, initials, or a photo.
 
