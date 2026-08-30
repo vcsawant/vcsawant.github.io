@@ -8,6 +8,7 @@ import SectionHeading from '../components/SectionHeading.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import SkillChips from '../components/SkillChips.astro';
 import GraphFallback from '../components/GraphFallback.astro';
+import SkillGraph from '../islands/skill-graph/SkillGraph';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
@@ -49,11 +50,14 @@ const description = 'Personal site of Viren Sawant, technical consultant.';
       below.
     </p>
     <SkillChips skills={usedSkills} />
-    <GraphFallback graph={graph} positions={positions} skills={usedSkills} projects={projects} />
+    <GraphFallback graph={graph} positions={positions} skills={usedSkills} projects={projects}>
+      <SkillGraph client:visible graph={graph} positions={Array.from(positions)} />
+    </GraphFallback>
   </section>
 </Base>
 
 <script src="../scripts/filter-projects.ts"></script>
+<script src="../scripts/graph-mode.ts"></script>
 
 <style>
   .about {

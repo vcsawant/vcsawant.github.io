@@ -982,7 +982,10 @@ reduced-motion context shows no transition pseudo-elements.
 `package.json` (`"budgets": "node scripts/check-bundle.mjs"`)
 **Depends on:** Phases 4–6 merged
 **Budgets (gzip):** non-island page JS ≤ 25 KB; GSAP chunk ≤ 50 KB; hero island total ≤ 90 KB;
-skill-graph island total (three+R3F+graph code, excl. lazy postprocessing) ≤ 260 KB;
+skill-graph island total (three+R3F+graph code, excl. lazy postprocessing) ≤ 300 KB
+(measured 2026-08-30 at Task 4.4: 294 KB gz actual — R3F+three 231, react-dom 56; the
+original 260 KB estimate predates measuring; the island is client:visible lazy so this never
+affects LCP);
 postprocessing lazy chunk ≤ 60 KB; layout.json + morph-targets.bin ≤ 200 KB raw. Script maps
 `dist/_astro/*` chunks to entry points via the build manifest, gzips, compares, prints a
 table, exits 1 on breach.

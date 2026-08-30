@@ -58,6 +58,7 @@ const categories = [
 ---
 
 <div class="graph-box" data-graph-slot>
+  <slot />
   <svg
     class="graph-svg"
     data-graph-static
@@ -164,6 +165,21 @@ const categories = [
     height: 100%;
     /* fades out (opacity only) when the WebGL canvas takes over; stays in DOM */
     transition: opacity var(--dur-slow) var(--ease-out);
+  }
+  .graph-box.is-webgl .graph-svg {
+    opacity: 0;
+  }
+  .graph-box :global(.skill-graph-canvas) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .graph-box :global(.skill-graph-canvas[data-live]) {
+    pointer-events: auto;
+  }
+  .graph-box :global(.skill-graph-canvas canvas) {
+    touch-action: pan-y;
   }
   .edges line {
     stroke: var(--color-text-muted);
