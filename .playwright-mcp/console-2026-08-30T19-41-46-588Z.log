@@ -21,3 +21,6 @@
 [  124652ms] [ERROR] Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep) @ http://localhost:4323/@id/astro/runtime/client/dev-toolbar/entrypoint.js:0
 [  124703ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4323/node_modules/.vite/deps/react-dom_client.js?v=1aed7df5:14144
 [  124820ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4323/@vite/client:532
+[  151234ms] [ERROR] Failed to load resource: the server responded with a status of 504 (Outdated Optimize Dep) @ http://localhost:4323/@id/astro/runtime/client/dev-toolbar/entrypoint.js:0
+[  151286ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4323/node_modules/.vite/deps/react-dom_client.js?v=1aed7df5:14144
+[  151375ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4323/@vite/client:532
