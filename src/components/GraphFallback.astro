@@ -21,7 +21,13 @@ const categories = [
 ---
 
 <div class="graph-box" data-graph-slot>
-  <div class="graph-static" data-graph-static>
+  <div
+    class="graph-static"
+    data-graph-static
+    role="region"
+    aria-label="Skills by category"
+    tabindex="0"
+  >
     <p class="graph-note">
       {projects.length} projects &middot; {skills.length} technologies
     </p>

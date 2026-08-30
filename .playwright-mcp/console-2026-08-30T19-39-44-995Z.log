@@ -1,2 +1,12 @@
 [     263ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
 [     398ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532
+[  100074ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
+[  100151ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532
+[  102704ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
+[  102768ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532
+[  104194ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
+[  104259ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532
+[  110138ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
+[  110208ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532
+[  118304ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:4322/node_modules/.vite/deps/react-dom_client.js?v=d68e190c:14144
+[  118366ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:4322/@vite/client:532

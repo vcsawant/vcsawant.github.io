@@ -12,7 +12,10 @@
     "astro": "astro",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lh": "lhci autorun",
+    "test:e2e": "playwright test",
+    "serve": "node scripts/serve-dist.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
@@ -29,7 +32,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.39.5",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.62.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/three": "^0.185.4",
     "eslint": "^9.39.5",
