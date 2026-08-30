@@ -1,0 +1,125 @@
+---
+import { getEntries, type CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const stack = await getEntries(project.data.stack);
+const skillIds = stack.map((s) => s.id).join(',');
+---
+
+<article class="project-card" data-project data-skills={skillIds}>
+  {
+    import.meta.env.DEV && project.data.placeholder && (
+      <p class="dev-badge" aria-hidden="true">
+        copy pending
+      </p>
+    )
+  }
+  <h3>
+    <a href={`/projects/${project.id}/`}>{project.data.title}</a>
+  </h3>
+  <p class="role">{project.data.role}</p>
+  <p class="summary">{project.data.summary}</p>
+  <ul class="stack" aria-label="Built with">
+    {
+      stack.map((s) => (
+        <li data-category={s.data.category}>
+          <span class="dot" aria-hidden="true" />
+          {s.data.label}
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out),
+      border-color var(--dur-quick) var(--ease-out);
+  }
+  .project-card:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-line));
+  }
+  /* filtered-out state: opacity/transform only — never layout */
+  .project-card.is-filtered {
+    opacity: 0.15;
+    transform: scale(0.98);
+    pointer-events: none;
+  }
+  .dev-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-bg-deep);
+    background: var(--color-accent);
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-sm);
+  }
+  h3 {
+    font-size: var(--text-xl);
+  }
+  h3 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  h3 a:hover {
+    color: var(--color-accent);
+  }
+  .role {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .summary {
+    color: var(--color-text-muted);
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin-top: auto;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+  .stack li {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .dot {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+  }
+  li[data-category='language'] .dot {
+    background: var(--node-language);
+  }
+  li[data-category='framework'] .dot {
+    background: var(--node-framework);
+  }
+  li[data-category='platform'] .dot {
+    background: var(--node-platform);
+  }
+  li[data-category='practice'] .dot {
+    background: var(--node-practice);
+  }
+</style>

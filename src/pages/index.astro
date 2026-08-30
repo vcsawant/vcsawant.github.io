@@ -1,6 +1,17 @@
 ---
+import { getCollection, getEntries } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SkillChips from '../components/SkillChips.astro';
+import GraphFallback from '../components/GraphFallback.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// Only skills actually used by at least one project appear in chips and the graph.
+const usedSkillRefs = projects.flatMap((p) => p.data.stack);
+const usedSkills = [...new Map((await getEntries(usedSkillRefs)).map((s) => [s.id, s])).values()];
 
 const description =
   'Viren Sawant — technical consultant and co-founder. Elixir, TypeScript, and the unglamorous work of shipping.';
@@ -8,4 +19,56 @@ const description =
 
 <Base title="Viren Sawant — Technical Consultant" description={description}>
   <Hero />
+
+  <section class="about wrap">
+    <p>
+      {
+        '{{TODO: 2–3 sentence about blurb from Viren — consulting startup, co-founder, owns technical delivery. See CONTENT-TODO.md}}'
+      }
+    </p>
+  </section>
+
+  <section class="work wrap" aria-labelledby="work">
+    <SectionHeading eyebrow="middlegame" title="Selected work" id="work" />
+    <p class="visually-hidden" aria-live="polite" data-filter-live></p>
+    <div class="card-grid">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </div>
+  </section>
+
+  <section class="skills wrap" aria-labelledby="skills">
+    <SectionHeading eyebrow="the position" title="Skills, connected" id="skills" />
+    <p class="skills-hint">
+      Tap a technology to see the work behind it. With JavaScript off you still get the full picture
+      below.
+    </p>
+    <SkillChips skills={usedSkills} />
+    <GraphFallback skills={usedSkills} projects={projects} />
+  </section>
 </Base>
+
+<script src="../scripts/filter-projects.ts"></script>
+
+<style>
+  .about {
+    padding-block: var(--space-6) 0;
+    font-size: var(--text-lg);
+  }
+  .work,
+  .skills {
+    padding-block: var(--space-7) 0;
+    scroll-margin-top: var(--space-6);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-4);
+  }
+  .skills-hint {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+  }
+  .skills :global(.graph-box) {
+    margin-top: var(--space-4);
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+/*
+ * Reserved box for the 3D skill graph. Until Phase 4 it holds a static, styled
+ * representation; Task 4.2 replaces the inner content with a build-time SVG of the
+ * actual graph layout. The WebGL canvas (Phase 4) mounts into [data-graph-slot]
+ * ON TOP of this; this stays in the DOM as the no-JS / no-WebGL / reduced-motion view.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  skills: CollectionEntry<'skills'>[];
+  projects: CollectionEntry<'projects'>[];
+}
+const { skills, projects } = Astro.props;
+const categories = [
+  { id: 'language', label: 'Languages' },
+  { id: 'framework', label: 'Frameworks' },
+  { id: 'platform', label: 'Platforms' },
+  { id: 'practice', label: 'Practices' },
+] as const;
+---
+
+<div class="graph-box" data-graph-slot>
+  <div class="graph-static" data-graph-static>
+    <p class="graph-note">
+      {projects.length} projects &middot; {skills.length} technologies
+    </p>
+    <dl>
+      {
+        categories.map((c) => (
+          <div class="cat">
+            <dt>{c.label}</dt>
+            <dd>
+              <ul>
+                {skills
+                  .filter((s) => s.data.category === c.id)
+                  .map((s) => (
+                    <li data-category={c.id}>
+                      <span class="dot" aria-hidden="true" />
+                      {s.data.label}
+                    </li>
+                  ))}
+              </ul>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</div>
+
+<style>
+  .graph-box {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    min-height: 22rem;
+    max-height: 34rem;
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-deep);
+    overflow: hidden;
+  }
+  .graph-static {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    overflow-y: auto;
+  }
+  .graph-note {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-4);
+  }
+  dt {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    margin-bottom: var(--space-2);
+  }
+  dd {
+    margin: 0;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+  }
+  .dot {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+  }
+  li[data-category='language'] .dot {
+    background: var(--node-language);
+  }
+  li[data-category='framework'] .dot {
+    background: var(--node-framework);
+  }
+  li[data-category='platform'] .dot {
+    background: var(--node-platform);
+  }
+  li[data-category='practice'] .dot {
+    background: var(--node-practice);
+  }
+</style>
