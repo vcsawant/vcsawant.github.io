@@ -27,7 +27,9 @@ uniform sampler2D uDistortion;
 varying float vFade;
 
 const float PI = 3.14159265359;
-const float DISTORTION_SCALE = 0.25; // NDC units at full displacement
+// uDistortion RG = fluid velocity in canvas-UV/s, range [-4,4], 0 = neutral
+// (see fluid.ts); scale converts to NDC displacement.
+const float DISTORTION_SCALE = 0.055;
 
 // position attribute doubles as target 0
 vec3 targetAt(float i) {
@@ -64,10 +66,10 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   vec4 clip = projectionMatrix * mv;
 
-  // screen-space displacement from the fluid sim (neutral texture otherwise)
+  // screen-space displacement from the fluid velocity field (zero when idle)
   vec2 duv = clip.xy / clip.w * 0.5 + 0.5;
-  vec2 disp = texture2D(uDistortion, duv).rg * 2.0 - 1.0;
-  clip.xy += disp * DISTORTION_SCALE * clip.w;
+  vec2 vel = texture2D(uDistortion, duv).rg;
+  clip.xy += vel * DISTORTION_SCALE * clip.w;
 
   gl_Position = clip;
   gl_PointSize = uPointScale / max(-mv.z, 0.1);

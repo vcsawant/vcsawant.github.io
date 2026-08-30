@@ -5,6 +5,7 @@ import { cssVar, detectTier, prefersReducedMotion } from '../../lib/webgl';
 import { useRenderGate } from '../use-render-gate';
 import { loadMorphTargets, strideSample, type MorphTargetData } from './load-morph-targets';
 import { FRAGMENT_SHADER, VERTEX_SHADER } from './shaders';
+import { useFluidField } from './fluid';
 
 /*
  * Hero particle field: morphs knight -> "VS" -> skill-graph wireframe.
@@ -27,7 +28,8 @@ declare global {
 }
 
 function makeNeutralDistortion(): THREE.DataTexture {
-  const tex = new THREE.DataTexture(new Uint8Array([128, 128, 0, 255]), 1, 1, THREE.RGBAFormat);
+  // zero velocity = no displacement (the fluid field replaces this once running)
+  const tex = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1, THREE.RGBAFormat);
   tex.needsUpdate = true;
   return tex;
 }
@@ -72,6 +74,11 @@ function Particles({ data }: { data: MorphTargetData }) {
   useEffect(() => {
     window.__heroDebug = { frames: 0, count: data.count };
   }, [data.count]);
+
+  // fluid cursor: pointer/touch smears displace the particles via uDistortion
+  useFluidField((tex) => {
+    if (materialRef.current) materialRef.current.uniforms.uDistortion!.value = tex;
+  });
 
   useFrame(({ clock, gl, size }) => {
     const mat = materialRef.current;

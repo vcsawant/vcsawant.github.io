@@ -1,5 +1,5 @@
 /**
- * GLSL for the fluid cursor spike.
+ * GLSL for the hero fluid field (origin: R1 spike, docs/rnd/fluid/report.md).
  *
  * Coordinate space: everything lives in canvas-UV space — (0,0) bottom-left,
  * (1,1) top-right of the hero canvas. The field texture is square (128^2) but
@@ -64,41 +64,5 @@ void main() {
   f.z = clamp(f.z, 0.0, 2.0);
 
   gl_FragColor = vec4(f.xyz, 1.0);
-}
-`;
-
-/**
- * Placeholder display: a dot grid whose sample position is displaced by the
- * velocity field and whose dots swell/brighten with dye. This is a stand-in
- * for the eventual particle vertex shader, which will do the same lookup.
- */
-export const DISPLAY_FRAG = /* glsl */ `
-precision highp float;
-
-varying vec2 vUv;
-
-uniform sampler2D uField;
-uniform float uAspect; // canvas width / height
-
-void main() {
-  vec4 f = texture2D(uField, vUv);
-
-  // Displace the grid lookup by the velocity field (same trick the particle
-  // vertex shader will use, just in fragment space).
-  vec2 uv = vUv - f.xy * 0.035;
-
-  vec2 g = uv * vec2(uAspect, 1.0) * 26.0;
-  vec2 cell = fract(g) - 0.5;
-  float dist = length(cell);
-
-  float dye = f.z;
-  float radius = 0.07 + 0.18 * clamp(dye, 0.0, 1.2);
-  float dotMask = smoothstep(radius, radius - 0.05, dist);
-
-  vec3 base = vec3(0.055, 0.06, 0.08);
-  vec3 dotCol = mix(vec3(0.30, 0.32, 0.36), vec3(0.45, 0.78, 1.0), clamp(dye, 0.0, 1.0));
-  vec3 col = base + dotMask * dotCol + clamp(dye, 0.0, 1.5) * vec3(0.02, 0.05, 0.09);
-
-  gl_FragColor = vec4(col, 1.0);
 }
 `;
