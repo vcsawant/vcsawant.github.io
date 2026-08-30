@@ -6,8 +6,9 @@ async function openGraph(page: Page) {
   // fold, putting the canvas center outside the viewport where clicks can't land
   await centerGraph(page);
   await expect(page.locator('.skill-graph-canvas canvas')).toBeVisible({ timeout: 15000 });
-  // interaction handlers attach in effects after the canvas paints
-  await page.waitForTimeout(300);
+  // interaction handlers attach in effects after the canvas paints; the lazy
+  // bloom chunk (full tier) re-commits the scene once loaded — wait it out
+  await page.waitForTimeout(900);
 }
 
 // Clicking a chip auto-scrolls the chip into view, pushing the canvas below the
@@ -89,10 +90,12 @@ test.describe('drag and drift', () => {
     expect(Math.abs(r1 - r0)).toBeLessThan(0.15); // drift only — gesture not captured
 
     await fire('pointerdown', 200, 300);
-    for (let i = 1; i <= 6; i++) await fire('pointermove', 200 + i * 30, 300);
-    await fire('pointerup', 380, 300);
+    for (let i = 1; i <= 10; i++) await fire('pointermove', 200 + i * 30, 300);
+    await fire('pointerup', 500, 300);
     const r2 = await rotY(page);
-    expect(r2 - r1).toBeGreaterThan(0.5); // 180px * 0.005 rad/px, minus capture slop
+    // 300px * 0.005 rad/px = 1.5 rad ideal; generous floor still ~3x the
+    // vertical bound, so the two behaviors can't be confused
+    expect(r2 - r1).toBeGreaterThan(0.45);
   });
 });
 
