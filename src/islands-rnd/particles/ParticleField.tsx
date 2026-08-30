@@ -37,12 +37,7 @@ declare global {
 /** 1x1 neutral distortion texture: RG = 0.5 decodes to zero displacement.
  *  The fluid sim will later swap in its own RG displacement render target. */
 function makeNeutralDistortion(): THREE.DataTexture {
-  const tex = new THREE.DataTexture(
-    new Uint8Array([128, 128, 0, 255]),
-    1,
-    1,
-    THREE.RGBAFormat,
-  );
+  const tex = new THREE.DataTexture(new Uint8Array([128, 128, 0, 255]), 1, 1, THREE.RGBAFormat);
   tex.needsUpdate = true;
   return tex;
 }
@@ -183,12 +178,7 @@ export default function ParticleField({
       gl={{ antialias: false, powerPreference: 'high-performance' }}
       style={{ position: 'absolute', inset: 0, background: '#0a0e14' }}
     >
-      <Particles
-        data={data}
-        tier={params.tier}
-        dwellMs={params.dwellMs}
-        morphMs={params.morphMs}
-      />
+      <Particles data={data} tier={params.tier} dwellMs={params.dwellMs} morphMs={params.morphMs} />
     </Canvas>
   );
 }
