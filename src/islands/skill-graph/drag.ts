@@ -37,6 +37,7 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
 
     const onDown = (e: PointerEvent) => {
       if (!e.isPrimary) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return; // left button only
       s.pointerId = e.pointerId;
       s.isTouch = e.pointerType === 'touch';
       s.captured = !s.isTouch; // mouse captures immediately, touch waits for intent
