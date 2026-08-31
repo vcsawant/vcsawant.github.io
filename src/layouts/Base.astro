@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -28,8 +29,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       crossorigin
     />
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
   </head>
   <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteNav />
     <main id="main">
