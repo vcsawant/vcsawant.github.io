@@ -83,6 +83,12 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
     const onUp = (e: PointerEvent) => {
       if (e.pointerId !== s.pointerId) return;
       if (s.captured && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+      // drag fast, hold still, release: the last move's velocity is stale —
+      // don't flick off with it
+      if (performance.now() - s.lastT > 90) {
+        s.velX = 0;
+        s.velY = 0;
+      }
       s.pointerId = -1;
       s.captured = false;
     };
@@ -99,7 +105,8 @@ export function useDragSpin(groupRef: RefObject<THREE.Group | null>): void {
     };
   }, [gl, groupRef]);
 
-  useFrame((_, delta) => {
+  useFrame((_, rawDelta) => {
+    const delta = Math.min(rawDelta, 0.1); // first frame after a gate pause carries the idle gap
     const g = groupRef.current;
     const s = st.current;
     if (!g) return;

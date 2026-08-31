@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import type * as THREE from 'three';
+import * as THREE from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
 import type { GraphData } from '../../lib/graph';
 import type { GraphAnim } from './anim';
@@ -22,7 +22,9 @@ export function Nodes({
   const ref = useRef<THREE.InstancedMesh>(null);
 
   useLayoutEffect(() => {
-    anim.nodesMesh = ref.current;
+    const mesh = ref.current;
+    if (mesh) mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    anim.nodesMesh = mesh;
     anim.animating = true; // paint initial state
     return () => {
       anim.nodesMesh = null;
@@ -44,7 +46,12 @@ export function Nodes({
   };
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, graph.nodes.length]} onClick={onClick}>
+    <instancedMesh
+      ref={ref}
+      args={[undefined, undefined, graph.nodes.length]}
+      onClick={onClick}
+      frustumCulled={false}
+    >
       <sphereGeometry args={[1, 24, 16]} />
       <meshStandardMaterial roughness={0.55} metalness={0.15} />
     </instancedMesh>

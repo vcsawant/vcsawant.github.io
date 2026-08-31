@@ -130,3 +130,18 @@ test.describe('selection sync', () => {
     );
   });
 });
+
+test.describe('pre-hydration selection replay', () => {
+  test.skip(({ browserName }) => browserName !== 'chromium', 'webgl-dependent');
+
+  test('a chip pressed before the island hydrates focuses the graph on mount', async ({ page }) => {
+    await page.goto('/');
+    // select while the graph (client:visible, below the fold) is not hydrated
+    await page.locator('[data-skill-chip="elixir"]').click();
+    await expect(page.locator('[data-project][aria-hidden="true"]')).toHaveCount(2);
+
+    await centerGraph(page);
+    await expect(page.locator('.skill-graph-canvas canvas')).toBeVisible({ timeout: 15000 });
+    await expect.poll(() => focusId(page), { timeout: 5000 }).toBe('elixir');
+  });
+});
