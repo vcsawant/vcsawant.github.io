@@ -28,15 +28,24 @@ const { skills } = Astro.props;
 
   // Chips only *dispatch*; all DOM state (aria-pressed, card filtering, announcements)
   // is applied by the single listener in src/scripts/filter-projects.ts.
-  document.querySelectorAll<HTMLButtonElement>('[data-skill-chip]').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const active = chip.getAttribute('aria-pressed') === 'true';
-      const detail: SkillSelectDetail = {
-        skillId: active ? null : (chip.dataset.skillChip ?? null),
-      };
-      window.dispatchEvent(new CustomEvent(EV.skillSelect, { detail }));
-    });
-  });
+  // Module scripts run once per session under view transitions, so binding is
+  // re-run (idempotently) on every astro:page-load.
+  function bindChips(): void {
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-skill-chip]:not([data-bound])')
+      .forEach((chip) => {
+        chip.dataset.bound = 'true';
+        chip.addEventListener('click', () => {
+          const active = chip.getAttribute('aria-pressed') === 'true';
+          const detail: SkillSelectDetail = {
+            skillId: active ? null : (chip.dataset.skillChip ?? null),
+          };
+          window.dispatchEvent(new CustomEvent(EV.skillSelect, { detail }));
+        });
+      });
+  }
+  bindChips();
+  document.addEventListener('astro:page-load', bindChips);
 </script>
 
 <style>

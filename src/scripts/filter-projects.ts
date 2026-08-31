@@ -58,3 +58,9 @@ document.addEventListener('keydown', (e) => {
     );
   }
 });
+
+// View transitions swap the DOM but keep this module alive: fresh chips/cards
+// arrive unpressed and unfiltered, so the state variable must match.
+document.addEventListener('astro:page-load', () => {
+  current = null;
+});

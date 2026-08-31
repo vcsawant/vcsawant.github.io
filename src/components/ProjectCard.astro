@@ -17,7 +17,7 @@ const skillIds = stack.map((s) => s.id).join(',');
       </p>
     )
   }
-  <h3>
+  <h3 transition:name={`project-title-${project.id}`}>
     <a href={`/projects/${project.id}/`}>{project.data.title}</a>
   </h3>
   <p class="role">{project.data.role}</p>

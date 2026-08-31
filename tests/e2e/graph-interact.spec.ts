@@ -82,12 +82,16 @@ test.describe('drag and drift', () => {
         [type, x, y] as const,
       );
 
+    const t0 = Date.now();
     const r0 = await rotY(page);
     await fire('pointerdown', 200, 300);
     for (let i = 1; i <= 6; i++) await fire('pointermove', 200, 300 + i * 20);
     await fire('pointerup', 200, 420);
     const r1 = await rotY(page);
-    expect(Math.abs(r1 - r0)).toBeLessThan(0.15); // drift only — gesture not captured
+    // gesture not captured: only idle drift (0.05 rad/s) may accumulate; budget
+    // it against real elapsed time so CI worker contention can't fake a failure
+    const driftBudget = 0.06 * ((Date.now() - t0) / 1000) + 0.08;
+    expect(Math.abs(r1 - r0)).toBeLessThan(driftBudget);
 
     await fire('pointerdown', 200, 300);
     for (let i = 1; i <= 10; i++) await fire('pointermove', 200 + i * 30, 300);
