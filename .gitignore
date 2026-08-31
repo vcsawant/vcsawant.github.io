@@ -28,3 +28,5 @@ pnpm-debug.log*
 test-results/
 playwright-report/
 .playwright-mcp/
+# scratch frames from scripts/generate-fallbacks.mjs
+.fallback-frames/

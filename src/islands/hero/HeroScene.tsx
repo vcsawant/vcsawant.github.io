@@ -34,9 +34,22 @@ function makeNeutralDistortion(): THREE.DataTexture {
   return tex;
 }
 
+/*
+ * Capture hook (read-only, Phase 7 fallback pipeline): `?heroT0=<ms>` pins the
+ * animation clock to `performance.now() - heroT0` instead of the R3F clock, so
+ * scripts/generate-fallbacks.mjs (driving a fake performance.now via
+ * Playwright's clock API) can capture frames at exact cycle phases. Absent the
+ * param — i.e. for every real visitor — behavior is byte-for-byte unchanged.
+ */
+function captureT0(): number | null {
+  const v = new URLSearchParams(window.location.search).get('heroT0');
+  return v === null ? null : Number(v);
+}
+
 function Particles({ data }: { data: MorphTargetData }) {
   useRenderGate();
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const t0 = useMemo(captureT0, []);
   const viewport = useThree((s) => s.viewport);
   // fit content (~±1.3 world units incl. swirl) into the frustum height
   const fitScale = Math.min(1.0, (Math.min(viewport.width, viewport.height) / 2 / 1.3) * 0.95);
@@ -83,13 +96,13 @@ function Particles({ data }: { data: MorphTargetData }) {
   useFrame(({ clock, gl, size }) => {
     const mat = materialRef.current;
     if (!mat) return;
-    const elapsedMs = clock.elapsedTime * 1000;
+    const elapsedMs = t0 === null ? clock.elapsedTime * 1000 : performance.now() - t0;
     const period = DWELL_MS + MORPH_MS;
     const local = elapsedMs % period;
     const seg = Math.floor(elapsedMs / period) % 3;
     const progress = Math.min(Math.max((local - DWELL_MS) / MORPH_MS, 0), 1);
     mat.uniforms.uMorph!.value = seg + progress;
-    mat.uniforms.uTime!.value = clock.elapsedTime;
+    mat.uniforms.uTime!.value = elapsedMs / 1000;
     mat.uniforms.uPointScale!.value = 3.4 * gl.getPixelRatio() * (size.height / 400);
     if (window.__heroDebug) window.__heroDebug.frames++;
   });
