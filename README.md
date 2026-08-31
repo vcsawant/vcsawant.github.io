@@ -64,6 +64,7 @@ npx vitest run       # unit tests
 npx playwright test  # e2e: no-JS, reduced-motion, no-WebGL, keyboard, axe, interactions
 npm run budgets      # gzip bundle budgets (every chunk must be claimed)
 npm run lh           # lighthouse assertions (perf/a11y/CLS)
+node scripts/generate-fallbacks.mjs  # regenerate WebM/poster fallbacks from the live scenes
 ```
 
 ## Editing content
