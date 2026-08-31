@@ -9,7 +9,9 @@ export function Edges({ anim }: { anim: GraphAnim }) {
   const geometry = useMemo(() => {
     const arr = new Float32Array(anim.pairs.length * 3);
     const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+    const attr = new THREE.BufferAttribute(arr, 3);
+    attr.setUsage(THREE.DynamicDrawUsage);
+    g.setAttribute('position', attr);
     // edges move during reorganization; a generous static bound avoids re-computes
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 40);
     return g;

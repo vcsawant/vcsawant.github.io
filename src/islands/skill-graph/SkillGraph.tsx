@@ -82,6 +82,10 @@ function GraphScene({ graph, positions, effects }: SkillGraphProps & { effects: 
   useEffect(() => {
     const worker = new Worker(new URL('./layout.worker.ts', import.meta.url), { type: 'module' });
     workerRef.current = worker;
+    worker.onerror = (e) => {
+      // selection dim/scale still applies; positions just won't reorganize
+      console.warn('skill-graph layout worker failed:', e.message);
+    };
     worker.onmessage = (ev: MessageEvent<WorkerOutMsg>) => {
       if (ev.data.type === 'positions') {
         anim.tgt.set(ev.data.positions);
@@ -103,6 +107,17 @@ function GraphScene({ graph, positions, effects }: SkillGraphProps & { effects: 
       setFocusTargets(anim, graph, skillId);
     };
     window.addEventListener(EV.skillSelect, onSelect);
+
+    // Replay any selection made BEFORE the island hydrated (chips are live
+    // immediately; this island loads lazily): sync to the pressed chip.
+    const pressed = document.querySelector<HTMLElement>('[data-skill-chip][aria-pressed="true"]');
+    if (pressed?.dataset.skillChip) {
+      onSelect(
+        new CustomEvent<SkillSelectDetail>(EV.skillSelect, {
+          detail: { skillId: pressed.dataset.skillChip },
+        }),
+      );
+    }
 
     return () => {
       window.removeEventListener(EV.skillSelect, onSelect);
@@ -141,14 +156,14 @@ function GraphScene({ graph, positions, effects }: SkillGraphProps & { effects: 
         <Nodes graph={graph} anim={anim} onSelect={requestSelect} />
         <Edges anim={anim} />
       </group>
-      {/* invisible raycast catcher: a tap that misses every node clears the
-          selection. Node clicks stopPropagation before reaching this. Not
-          rendered (visible=false) — raycasting ignores visibility. */}
       {effects && (
         <Suspense fallback={null}>
           <GraphEffects />
         </Suspense>
       )}
+      {/* invisible raycast catcher: a tap that misses every node clears the
+          selection. Node clicks stopPropagation before reaching this. Not
+          rendered (visible=false) — raycasting ignores visibility. */}
       <mesh
         visible={false}
         position={[0, 0, -24]}
@@ -178,6 +193,7 @@ export default function SkillGraph({ graph, positions }: SkillGraphProps) {
 
   const fail = () => {
     setMode('fallback');
+    if (window.__graphDebug) window.__graphDebug.mode = 'fallback';
     announce('fallback');
   };
 

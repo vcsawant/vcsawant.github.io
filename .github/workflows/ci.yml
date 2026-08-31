@@ -17,6 +17,7 @@ jobs:
       - run: npx astro check
       - run: npm run lint
       - run: npm run format:check
+      - run: npx vitest run
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test

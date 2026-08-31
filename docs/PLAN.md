@@ -902,6 +902,14 @@ blocking scroll (`touch-action: pan-y`, passive listeners); sim fully idle (zero
 
 **Phase 5 boundary:** dispatch **A5 perf audit** + **CR-5 code review**. The audit explicitly
 re-checks LCP and total blocking time on `/` with both islands live.
+**Execution note (2026-08-30):** the A4 audit ran against a HEAD that already included both
+hero islands (PRs #5/#6 merged first), so it doubles as A5 — all 8 checks passed with both
+islands live (perf 1.00, LCP 1652 ms text, CLS 0, TBT 0; see docs/audits/phase4-audit.md).
+Dispositions of its findings: (1) `{{TODO}}` copy shipping is known and CP-gated — lands at
+Task 8.4; (2) graph drag at 6× CPU throttle runs ~30–45 fps on the FULL tier (bloom on) with
+zero >50 ms tasks — real low-end devices land on the lite tier (no bloom); Task 7.3
+real-device testing decides whether further trimming is needed; (3) one 53 ms mount task —
+accepted. CR-5 still runs separately (hero code was outside CR-4's scope).
 
 ---
 
