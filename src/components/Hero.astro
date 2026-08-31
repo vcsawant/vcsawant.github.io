@@ -10,6 +10,23 @@ import HeroScene from '../islands/hero/HeroScene';
 
 <section class="hero">
   <div class="hero-canvas" data-hero-canvas aria-hidden="true">
+    {
+      /* poster is the default (also the no-JS visual); fallback.ts swaps in the
+        WebM on webgl-less browsers, or hides both once the canvas is live */
+    }
+    <picture data-hero-poster>
+      <source srcset="/fallback/hero.avif" type="image/avif" />
+      <img src="/fallback/hero.jpg" alt="" decoding="async" fetchpriority="low" />
+    </picture>
+    <video
+      data-hero-video
+      src="/fallback/hero.webm"
+      poster="/fallback/hero.jpg"
+      muted
+      loop
+      playsinline
+      preload="none"
+      hidden></video>
     <HeroScene client:idle />
   </div>
   <div class="wrap hero-copy">
@@ -59,6 +76,15 @@ import HeroScene from '../islands/hero/HeroScene';
      * Decorative only: pointer events pass through to text and CTAs.
      * The fluid sim reads pointer input from the section, not the canvas. */
     pointer-events: none;
+  }
+  .hero-canvas picture,
+  .hero-canvas img,
+  .hero-canvas video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .hero-copy {
     position: relative;

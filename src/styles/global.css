@@ -35,6 +35,10 @@ svg {
   display: block;
   max-width: 100%;
 }
+/* the display:block reset above would otherwise defeat the hidden attribute */
+[hidden] {
+  display: none !important;
+}
 input,
 button,
 textarea,

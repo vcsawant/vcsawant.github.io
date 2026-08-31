@@ -59,6 +59,17 @@ const categories = [
 
 <div class="graph-box" data-graph-slot>
   <slot />
+  {/* webgl-less + motion-ok browsers get the drifting loop; everyone else the SVG */}
+  <video
+    class="graph-video"
+    data-graph-video
+    src="/fallback/graph.webm"
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-hidden="true"
+    hidden></video>
   <svg
     class="graph-svg"
     data-graph-static
@@ -168,6 +179,14 @@ const categories = [
   }
   .graph-box.is-webgl .graph-svg {
     opacity: 0;
+  }
+  .graph-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
   }
   .graph-box :global(.skill-graph-canvas) {
     position: absolute;
