@@ -31,10 +31,15 @@ test.describe('hero particles', () => {
 test.describe('hero reduced motion', () => {
   test.use({ contextOptions: { reducedMotion: 'reduce' } });
 
-  test('no particle canvas, static hero remains', async ({ page }) => {
+  test('no particle canvas, no .bin fetch, static hero remains', async ({ page }) => {
+    const binRequests: string[] = [];
+    page.on('request', (req) => {
+      if (req.url().includes('morph-targets')) binRequests.push(req.url());
+    });
     await page.goto('/');
     await page.waitForTimeout(2000);
     await expect(page.locator('[data-hero-canvas] canvas')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    expect(binRequests).toEqual([]); // reduced motion never downloads the 900KB binary
   });
 });
