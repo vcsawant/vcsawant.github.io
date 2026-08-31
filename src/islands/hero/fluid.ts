@@ -63,11 +63,12 @@ export function useFluidField(apply: (tex: THREE.Texture) => void): void {
       depthWrite: false,
     });
     const scene = new THREE.Scene();
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
     mesh.frustumCulled = false;
     scene.add(mesh);
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    return { material, scene, camera, read: makeTarget(), write: makeTarget() };
+    return { material, geometry, scene, camera, read: makeTarget(), write: makeTarget() };
   }, []);
 
   const st = useRef({
@@ -133,11 +134,22 @@ export function useFluidField(apply: (tex: THREE.Texture) => void): void {
       sim.read.dispose();
       sim.write.dispose();
       sim.material.dispose();
+      sim.geometry.dispose();
       delete window.__fluidDebug;
     };
   }, [gl, sim]);
 
+  // rare WebGL2 devices can't render to half-float targets; skip the sim there
+  // (particles keep working with zero displacement) instead of erroring per frame
+  const renderable = useMemo(
+    () =>
+      gl.extensions.has('EXT_color_buffer_float') ||
+      gl.extensions.has('EXT_color_buffer_half_float'),
+    [gl],
+  );
+
   useFrame((_, delta) => {
+    if (!renderable) return;
     const s = st.current;
     const dt = Math.min(Math.max(delta, 1 / 240), 1 / 20);
 

@@ -73,7 +73,12 @@ function Particles({ data }: { data: MorphTargetData }) {
 
   useEffect(() => {
     window.__heroDebug = { frames: 0, count: data.count };
-  }, [data.count]);
+    const neutral = uniforms.uDistortion.value;
+    return () => {
+      delete window.__heroDebug;
+      neutral.dispose(); // the fluid's render targets dispose themselves
+    };
+  }, [data.count, uniforms]);
 
   // fluid cursor: pointer/touch smears displace the particles via uDistortion
   useFluidField((tex) => {
@@ -89,7 +94,8 @@ function Particles({ data }: { data: MorphTargetData }) {
     const seg = Math.floor(elapsedMs / period) % 3;
     const progress = Math.min(Math.max((local - DWELL_MS) / MORPH_MS, 0), 1);
     mat.uniforms.uMorph!.value = seg + progress;
-    mat.uniforms.uTime!.value = clock.elapsedTime;
+    // hour-bounded: unbounded float32 time makes the swirl steppy after hours
+    mat.uniforms.uTime!.value = clock.elapsedTime % 3600;
     mat.uniforms.uPointScale!.value = 3.4 * gl.getPixelRatio() * (size.height / 400);
     if (window.__heroDebug) window.__heroDebug.frames++;
   });

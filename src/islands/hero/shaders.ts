@@ -9,9 +9,10 @@
  * - Attributes: `position` (target 0), `aTarget1`, `aTarget2`, `aSeed`.
  * - Per-frame uniforms: `uMorph` (continuous cycle position in [0,3)),
  *   `uTime` (seconds).
- * - Init-only uniforms: `uPointScale`, `uColorCore`, `uColorEdge`,
- *   `uDistortion` (sampler2D, screen-space UV, RG = displacement, 0.5 =
- *   neutral — the fluid sim owns this on the full tier).
+ * - Per-frame uniform: `uPointScale` (recomputed so resize/dpr changes track).
+ * - Init-only uniforms: `uColorCore`, `uColorEdge`, `uDistortion` (sampler2D,
+ *   screen-space UV, RG = fluid velocity in canvas-UV/s, 0 = neutral — owned
+ *   by the fluid sim whenever WebGL is on).
  */
 
 export const VERTEX_SHADER = /* glsl */ `

@@ -27,6 +27,7 @@ export async function loadMorphTargets(url = '/morph-targets.bin'): Promise<Morp
   if (head.getUint32(4, true) !== 1) throw new Error('morph targets: unsupported version');
   const count = head.getUint32(8, true);
   const numTargets = head.getUint32(12, true);
+  if (numTargets !== 3) throw new Error(`morph targets: expected 3 targets, got ${numTargets}`);
   if (buf.byteLength < HEADER_BYTES + numTargets * count * 12) {
     throw new Error('morph targets: truncated file');
   }
