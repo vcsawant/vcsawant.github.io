@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 
 <Base title="Not found — Viren Sawant" description="This page does not exist.">
   <section class="lost wrap">
+    <span class="ghost-knight" aria-hidden="true">&#9822;</span>
     <p class="eyebrow">illegal move</p>
     <h1>404 &middot; no such square</h1>
     <p>This page isn&rsquo;t on the board. The game continues from the start position.</p>
@@ -13,11 +14,23 @@ import Base from '../layouts/Base.astro';
 
 <style>
   .lost {
+    position: relative;
     min-height: 50dvh;
     display: grid;
     align-content: center;
     gap: var(--space-3);
     padding-block: var(--space-7);
+  }
+  .ghost-knight {
+    position: absolute;
+    right: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(8rem, 30vw, 18rem);
+    line-height: 1;
+    color: var(--color-surface);
+    user-select: none;
+    pointer-events: none;
   }
   h1 {
     font-size: var(--text-2xl);
