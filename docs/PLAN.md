@@ -978,6 +978,22 @@ reduced motion → no transition animation (Astro respects it by default; verify
 reduced-motion context shows no transition pseudo-elements.
 
 **Phase 6 boundary:** dispatch **A6 perf audit** + **CR-6 code review**.
+**Execution note (2026-08-31), boundary outcomes:**
+- CR-6 major 1 + A6 finding 2: the Task 6.2 heading pin painted UNDER the cards and the
+  one-row desktop work section is too short to pin meaningfully — the pin was REMOVED
+  rather than rescued. GSAP's remaining job is the hero parallax hand-off; sequencing
+  weight lives in the CSS reveal choreography. (Spec lists ScrollTrigger pinning as a
+  capability, not an acceptance bar.)
+- CR-6 major 2: gsap.matchMedia leaks an MQL listener per add() across view transitions
+  (GSAP never detaches). motion.ts now owns a single module-level media listener and
+  reverts tracked tweens instead.
+- A6 finding 1 (HIGH): the CSS minifier merged animation longhands into a shorthand that
+  cannot carry `animation-timeline`, silently killing ALL scroll-driven CSS in production —
+  every existing test passed vacuously (absence assertions). Fixed via esbuild cssMinify +
+  a POSITIVE liveness e2e (asserts bar-grow and rise-in animations exist).
+- A6 finding 3 (perf 0.63): environmental — re-measured on a quiet machine: 0.99, LCP 1.8 s,
+  TBT 0, CLS 0. Parallel-agent CPU contention inflates simulate-mode scores (same reason CI
+  asserts 0.85 median-of-3 as regression guard).
 
 ---
 

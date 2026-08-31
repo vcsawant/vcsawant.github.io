@@ -21,6 +21,25 @@ test.describe('motion layer', () => {
     expect(style).not.toBe('');
   });
 
+  test('scroll-driven CSS animations are ALIVE in the built output', async ({ page }) => {
+    // Positive liveness check: the A6 audit caught the minifier silently
+    // killing every animation-timeline declaration while all our
+    // absence-assertions kept passing vacuously. Never again.
+    await page.goto('/');
+    const names = await page.evaluate(() =>
+      document.getAnimations().map((a) => (a as CSSAnimation).animationName),
+    );
+    expect(names).toContain('bar-grow'); // scroll(root) progress bar
+    await page.evaluate(() =>
+      document.querySelector('#work')!.scrollIntoView({ behavior: 'instant' }),
+    );
+    await page.waitForTimeout(300);
+    const namesAtWork = await page.evaluate(() =>
+      document.getAnimations().map((a) => (a as CSSAnimation).animationName),
+    );
+    expect(namesAtWork).toContain('rise-in'); // card reveals near the viewport
+  });
+
   test('reveals leave no inline styles that could fight the filter system', async ({ page }) => {
     await page.goto('/');
     await page.evaluate(() =>
