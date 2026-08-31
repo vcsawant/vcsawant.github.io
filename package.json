@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "serve": "node scripts/serve-dist.mjs",
     "postbuild": "node scripts/prune-dist.mjs",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "budgets": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
